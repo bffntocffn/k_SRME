@@ -11,7 +11,7 @@ import pandas as pd
 
 from ase.io import read
 from phono3py import load
-
+import numpy as np
 warnings.filterwarnings("ignore", category=DeprecationWarning, module="spglib")
 
 FREQUENCY_THRESHOLD = -1e-2
@@ -37,10 +37,12 @@ def check_imaginary_freqs(frequencies: np.ndarray):
     return False
 
 def please_work_please(atoms):
+    head = sys.argv[1]
     idx = atoms.info['index']
     if atoms.info['fc2_error']:
         return 'FC2_ERROR'
     mesh = [19, 19, 15] if atoms.info['spg_num'] == 186 else [19, 19, 19]
+    ph3 = load(f'{head}/phonon/phono3py_params_fc3_{idx}.yaml')
     ph3.mesh_numbers = mesh
     ph3.init_phph_interaction(symmetrize_fc3q=False)
     ph3.run_phonon_solver()
